@@ -1,0 +1,37 @@
+name: Get historical_data from knmi
+run-name: ${{ github.actor }} is testing getting historical rain data from knmi
+on: 
+  schedule:
+    - cron: '00 5 * * 0'
+env:
+  TRAIN_START_DATE: "20140101"
+  TRAIN_END_DATE: "20240501"
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+    - name: Set Up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.8
+    - name: Install dependencies
+      run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+    - name: Get start and end dates for training data
+      run: python set_dates_for_training.py
+    - name: Get daily rain data
+      run: |
+        echo "Echoing env vars before get daily data: $TRAIN_START_DATE and $TRAIN_END_DATE"
+        python get_historical_rain_data_from_knmi.py
+    - name: Commit and push CSV file
+      run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git add files/historical_rain_data.csv  # Replace with your actual file name
+          git commit -m 'Add generated CSV file'
+          git push
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

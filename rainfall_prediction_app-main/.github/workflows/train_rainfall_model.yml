@@ -1,0 +1,33 @@
+name: Train rainfall model
+run-name: ${{ github.actor }} is testing training rainfall model
+on: 
+  schedule:
+    - cron: '30 5 * * 0'
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+    - name: Set Up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.9
+    - name: Install dependencies
+      run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+    - name: Train daily rainfall model
+      run: python train_rainfall_model.py
+    - name: Commit and push CSV file
+      run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git add files/train_test_set_comprehensive.csv  
+          git add files/rainfall_models.pickle
+          git add images/confusion_matrix_train.png
+          git add images/confusion_matrix_test.png
+          git commit -m 'Add generated CSV file'
+          git push
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
