@@ -1,4 +1,5 @@
-import logging
+
+"""import logging
 import os
 import sys
 
@@ -107,7 +108,9 @@ df.loc[:, tmp.columns] = np.round(tmp,2)
 
 #Remove rows with more than 1 NA values
 df=df[df.isnull().sum(axis=1)<=1]
+//
 
 df=df.fillna('-')
 
 df.to_csv('files/latest_measurements.csv',mode='w',header=True,index=False)
+"""
